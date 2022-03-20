@@ -1,0 +1,18 @@
+﻿@page
+@using System.Security.Claims
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+    var principal = this.User; //ClaimsPrincipal.Current;
+    var claims = new List<Claim>();
+    if(principal != null) claims = principal.Claims.ToList();
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    @foreach(var c in claims)
+    {
+        <div class="left">@c.Type - @c.Value</div>
+    }
+</div>
