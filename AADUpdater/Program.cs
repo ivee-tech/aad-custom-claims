@@ -29,13 +29,14 @@ class Program
                 .AddJsonFile("appsettings.json")
                 .Build();
             var tenant = config["AzureAd:Tenant"];
+            var graphAppSecret = arguments.Parameters["--graph-app-secret"];
             var userName = $"{arguments.Parameters["--user-name"]}@{tenant}.onmicrosoft.com";
             var attrName = arguments.Parameters["--attr-name"];
 
             switch (arguments.Command.ToLower())
             {
                 case Get:
-                    var result = await GetUserByIdWithCustomAttributes(userName, attrName, config);
+                    var result = await GetUserByIdWithCustomAttributes(userName, attrName, config, graphAppSecret);
                     var user = ((dynamic)result).user as User;
                     if (user != null)
                     {
@@ -46,7 +47,7 @@ class Program
                     break;
                 case Set:
                         var attrValue = arguments.Parameters["--attr-value"];
-                        var result2 = await UpdateUserCustomCode(userName, attrValue, config);
+                        var result2 = await UpdateUserCustomCode(userName, attrValue, config, graphAppSecret);
                         var user2 = ((dynamic)result2).user as User;
                         if (user2 != null)
                         {
@@ -68,18 +69,18 @@ class Program
         }
     }
 
-    private static async Task<object> GetUserByIdWithCustomAttributes(string userId, string customAttributeNames, IConfiguration config)
+    private static async Task<object> GetUserByIdWithCustomAttributes(string userId, string customAttributeNames, IConfiguration config, string graphAppSecret)
     {
-        var graphClient = CreateClient(config);
+        var graphClient = CreateClient(config, graphAppSecret);
         var extensionClientId = config["AzureAd:ExtensionAppClientId"];
         var user = await UserService.GetUserByIdWithCustomAttributes(userId, extensionClientId, customAttributeNames, graphClient);
         var result = new { user };
         return result;
     }
 
-    private static async Task<object> UpdateUserCustomCode(string userId, string customCodeValue, IConfiguration config)
+    private static async Task<object> UpdateUserCustomCode(string userId, string customCodeValue, IConfiguration config, string graphAppSecret)
     {
-        var graphClient = CreateClient(config);
+        var graphClient = CreateClient(config, graphAppSecret);
         var extensionClientId = config["AzureAd:ExtensionAppClientId"];
         var customAttributes = new Dictionary<string, object>();
         var propName = "CustomCode";
@@ -89,12 +90,12 @@ class Program
         return result;
     }
 
-    private static GraphServiceClient CreateClient(IConfiguration config)
+    private static GraphServiceClient CreateClient(IConfiguration config, string graphAppSecret)
     {
         var tenant = config["AzureAd:Tenant"];
         var clientId = config["AzureAd:ClientId"];
         var tenantId = config["AzureAd:TenantId"];
-        var clientSecret = "5Wa7Q~bQwozyVGuSzUPrvLM9kqfrUK~NroVKl"; // config[$"AzureAd:{tenant}ClientSecret"];
+        var clientSecret = graphAppSecret;
         IConfidentialClientApplication confidentialClientApplication = ConfidentialClientApplicationBuilder
             .Create(clientId)
             .WithTenantId(tenantId)

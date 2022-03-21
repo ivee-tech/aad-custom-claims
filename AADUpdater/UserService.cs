@@ -13,7 +13,7 @@ namespace AADUpdater
         {
             if (string.IsNullOrWhiteSpace(extensionAppClientId))
             {
-                throw new ArgumentException("B2cExtensionAppClientId (its Application ID) is missing from appsettings.json. Find it in the App registrations pane in the Azure portal. The app registration has the name 'b2c-extensions-app. Do not modify. Used by AADB2C for storing user data.'.", nameof(extensionAppClientId));
+                throw new ArgumentException("ExtensionAppClientId (Application ID) is missing from appsettings.json. Find it in the App registrations pane in the Azure portal.", nameof(extensionAppClientId));
             }
 
             // Get the complete name of the custom attribute (Azure AD extension)
@@ -42,7 +42,7 @@ namespace AADUpdater
         {
             if (string.IsNullOrWhiteSpace(extensionAppClientId))
             {
-                throw new ArgumentException("B2C Extension App ClientId (ApplicationId) is missing in the appsettings.json. Get it from the App Registrations blade in the Azure portal. The app registration has the name 'b2c-extensions-app. Do not modify. Used by AADB2C for storing user data.'.", nameof(extensionAppClientId));
+                throw new ArgumentException("ExtensionAppClientId (ApplicationId) is missing in the appsettings.json. Get it from the App Registrations blade in the Azure portal.", nameof(extensionAppClientId));
             }
 
             // Get the complete name of the custom attribute (Azure AD extension)
